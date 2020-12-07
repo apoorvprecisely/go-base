@@ -226,13 +226,15 @@ func (d *ZookDriver) WatchChildrenWCh(path string, channel chan *drivers.Event) 
 						if contains(children, child) {
 							continue
 						}
+						fmt.Println("Trying " + child)
+
 						newNode := path + "/" + child
 						// if child == path {
 						go d.WatchChildrenWCh(newNode, channel)
 						nodes, _, _ := d.conn.Children(newNode)
 						for _, node := range nodes {
 							n := newNode + "/" + node
-							fmt.Println("Adding new watcher " + newNode)
+							fmt.Println("Adding new watcher " + newNode + " for root" + path)
 							go d.WatchChildrenWCh(n, channel)
 						}
 						// } else {
