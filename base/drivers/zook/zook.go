@@ -223,7 +223,7 @@ func (d *ZookDriver) WatchChildrenWCh(path string, channel chan *drivers.Event) 
 						close(channel)
 					}
 					for _, child := range newChildren {
-						if contains(children, i) {
+						if contains(children, child) {
 							continue
 						}
 						newNode := path + "/" + child
