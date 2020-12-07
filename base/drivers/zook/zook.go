@@ -222,8 +222,10 @@ func (d *ZookDriver) WatchChildrenWCh(path string, channel chan *drivers.Event) 
 					if err != nil {
 						close(channel)
 					}
-					addedChildren := difference(newChildren, children)
-					for _, child := range addedChildren {
+					for _, child := range newChildren {
+						if contains(children, i) {
+							continue
+						}
 						newNode := path + "/" + child
 						// if child == path {
 						go d.WatchChildrenWCh(newNode, channel)
@@ -269,25 +271,7 @@ func NewZKDriver(servers []string, timeout time.Duration, rootDir string) driver
 		rootDir: rootDir,
 	}
 }
-func difference(slice1 []string, slice2 []string) []string {
-	diffStr := []string{}
-	m := map[string]int{}
 
-	for _, s1Val := range slice1 {
-		m[s1Val] = 1
-	}
-	for _, s2Val := range slice2 {
-		m[s2Val] = m[s2Val] + 1
-	}
-
-	for mKey, mVal := range m {
-		if mVal == 1 {
-			diffStr = append(diffStr, mKey)
-		}
-	}
-
-	return diffStr
-}
 func merge(cs []<-chan zk.Event) <-chan zk.Event {
 	var wg sync.WaitGroup
 	out := make(chan zk.Event)
@@ -308,4 +292,12 @@ func merge(cs []<-chan zk.Event) <-chan zk.Event {
 		close(out)
 	}()
 	return out
+}
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
