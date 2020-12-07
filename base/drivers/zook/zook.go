@@ -194,7 +194,7 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 		if err != nil {
 			close(channel)
 		}
-		fmt.Println("Adding new channel " + val[i])
+		fmt.Println("Adding new channel " + path + "/" + val[i])
 		chCh[i] = ech
 	}
 	//adding parent event channel too
@@ -205,8 +205,7 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 	go func(path string, mCh <-chan zk.Event) {
 		for {
 			select {
-			case event := <-ech:
-				val, _, ech, err = d.conn.ChildrenW(path)
+			case event := <-mCh:
 				//add watch on this new node
 				// This is done to wrap Zookeeper Events into Driver Events
 				// This will ensure the re-usability of the interface
