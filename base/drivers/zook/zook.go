@@ -188,6 +188,7 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 
 // WatchChildrenWCh watches for changes on node and its children, response channel passed as arg
 func (d *ZookDriver) WatchChildrenWCh(path string, channel chan *drivers.Event) ([]string, <-chan *drivers.Event, error) {
+	fmt.Println("Loop" + path)
 	children, _, err := d.conn.Children(path)
 	if err != nil {
 		return nil, nil, err
