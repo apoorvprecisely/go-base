@@ -183,6 +183,7 @@ func (d *ZookDriver) Watch(path string) ([]byte, <-chan *drivers.Event, error) {
 // WatchChildren watches for changes on node and its children
 func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event, error) {
 	var channel = make(chan *drivers.Event)
+	var errChannel = make(chan error)
 	val, _, ech, err := d.conn.ChildrenW(path)
 	if err != nil {
 		return nil, nil, err
@@ -202,7 +203,7 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 	//merging all events into one channel
 	mCh := merge(chCh)
 	fmt.Println("Merging channels " + path)
-	go func(path string, mCh <-chan zk.Event) {
+	go func(path string, mCh <-chan zk.Event, channel chan *drivers.Event, errChannel chan error) {
 		for {
 			select {
 			case event := <-mCh:
@@ -278,7 +279,7 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 				}
 			}
 		}
-	}(path, mCh)
+	}(path, mCh, channel, errChannel)
 	return val, channel, nil
 }
 
