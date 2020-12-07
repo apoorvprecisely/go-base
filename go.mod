@@ -1,4 +1,4 @@
-module github.com/unbxd/go-base
+module github.com/apoorvprecisely/go-base
 
 go 1.12
 
