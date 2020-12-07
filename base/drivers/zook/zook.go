@@ -1,6 +1,7 @@
 package zook
 
 import (
+	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -193,12 +194,14 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 		if err != nil {
 			close(channel)
 		}
+		fmt.Println("Adding new channel " + val[i])
 		chCh[i] = ech
 	}
 	//adding parent event channel too
 	chCh = append(chCh, ech)
 	//merging all events into one channel
 	mCh := merge(chCh)
+	fmt.Println("Merging channels " + path)
 	go func(path string, mCh <-chan zk.Event) {
 		for {
 			select {
@@ -207,6 +210,7 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 				//add watch on this new node
 				// This is done to wrap Zookeeper Events into Driver Events
 				// This will ensure the re-usability of the interface
+				fmt.Println("Reading event " + event.Path)
 				switch event.Type {
 				case zk.EventNodeCreated:
 					newC, _, uCh, err := d.conn.GetW(event.Path)
@@ -217,7 +221,8 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 					tmp = append(tmp, uCh)
 					tmp = append(tmp, mCh)
 					mCh = merge(tmp)
-					channel <- &drivers.Event{Type: drivers.EventCreated, P: path, D: string(newC)}
+					fmt.Println("Merging channels " + event.Path)
+					channel <- &drivers.Event{Type: drivers.EventCreated, P: event.Path, D: string(newC)}
 				case zk.EventNodeDeleted:
 					delC, _, uCh, err := d.conn.GetW(event.Path)
 					if err != nil {
@@ -227,7 +232,8 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 					tmp = append(tmp, uCh)
 					tmp = append(tmp, mCh)
 					mCh = merge(tmp)
-					channel <- &drivers.Event{Type: drivers.EventDeleted, P: path, D: string(delC)}
+					fmt.Println("Merging channels " + event.Path)
+					channel <- &drivers.Event{Type: drivers.EventDeleted, P: event.Path, D: string(delC)}
 				case zk.EventNodeDataChanged:
 					chC, _, uCh, err := d.conn.GetW(event.Path)
 					if err != nil {
@@ -237,7 +243,8 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 					tmp = append(tmp, uCh)
 					tmp = append(tmp, mCh)
 					mCh = merge(tmp)
-					channel <- &drivers.Event{Type: drivers.EventDataChanged, P: path, D: string(chC)}
+					fmt.Println("Merging channels " + event.Path)
+					channel <- &drivers.Event{Type: drivers.EventDataChanged, P: event.Path, D: string(chC)}
 				case zk.EventNodeChildrenChanged:
 					if event.Path == path {
 						//find new added child and add its channel to mECh
@@ -252,6 +259,7 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 							if err != nil {
 								close(channel)
 							}
+							fmt.Println("Adding new channel " + path + "/" + child)
 							tmp = append(tmp, ech)
 						}
 						_, _, rCh, err := d.conn.ChildrenW(path)
@@ -261,8 +269,8 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 						tmp = append(tmp, rCh)
 						tmp = append(tmp, mCh)
 						mCh = merge(tmp)
+						fmt.Println("Merging channels " + event.Path)
 					}
-					channel <- &drivers.Event{Type: drivers.EventChildrenChanged, P: path, D: val}
 				}
 
 				if err != nil {
