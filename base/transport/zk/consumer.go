@@ -6,10 +6,10 @@ import (
 	"github.com/go-kit/kit/transport"
 	"github.com/pkg/errors"
 	"github.com/samuel/go-zookeeper/zk"
-	"github.com/unbxd/go-base/base/drivers"
-	"github.com/unbxd/go-base/base/drivers/zook"
-	"github.com/unbxd/go-base/base/endpoint"
-	"github.com/unbxd/go-base/base/log"
+	"github.com/apoorvprecisely/go-base/base/drivers"
+	"github.com/apoorvprecisely/go-base/base/drivers/zook"
+	"github.com/apoorvprecisely/go-base/base/endpoint"
+	"github.com/apoorvprecisely/go-base/base/log"
 	"time"
 )
 

@@ -2,7 +2,7 @@ package dialer
 
 import (
 	"context"
-	"github.com/unbxd/go-base/base/log"
+	"github.com/apoorvprecisely/go-base/base/log"
 	"net/http"
 	net_http "net/http"
 

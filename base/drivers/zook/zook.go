@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/unbxd/go-base/base/drivers"
+	"github.com/apoorvprecisely/go-base/base/drivers"
 
 	"github.com/pkg/errors"
 	"github.com/samuel/go-zookeeper/zk"

@@ -2,9 +2,9 @@ package retrier
 
 import (
 	"context"
-	"github.com/unbxd/go-base/base/dialer"
-	"github.com/unbxd/go-base/base/endpoint"
-	"github.com/unbxd/go-base/base/log"
+	"github.com/apoorvprecisely/go-base/base/dialer"
+	"github.com/apoorvprecisely/go-base/base/endpoint"
+	"github.com/apoorvprecisely/go-base/base/log"
 	"math/rand"
 	"time"
 
