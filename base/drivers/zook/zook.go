@@ -270,6 +270,7 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 						tmp = append(tmp, mCh)
 						mCh = merge(tmp)
 						fmt.Println("Merging channels " + event.Path)
+						channel <- &drivers.Event{Type: drivers.EventChildrenChanged, P: event.Path, D: nChList}
 					}
 				}
 
