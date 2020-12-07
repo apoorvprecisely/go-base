@@ -199,8 +199,7 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 	chCh = append(chCh, ech)
 	//merging all events into one channel
 	mCh := merge(chCh)
-	go func(path string, channel chan *drivers.Event) {
-
+	go func(path string, mCh <-chan zk.Event) {
 		for {
 			select {
 			case event := <-ech:
@@ -272,8 +271,7 @@ func (d *ZookDriver) WatchChildren(path string) ([]string, <-chan *drivers.Event
 				}
 			}
 		}
-	}(path, channel)
-
+	}(path, mCh)
 	return val, channel, nil
 }
 
